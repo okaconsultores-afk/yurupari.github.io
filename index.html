@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yurupari - Tejamos ideas, conectando lenguajes</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#132136">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Fira+Sans:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        okaDeepDark: '#132136',
+                        okaBlue: '#0071B8',
+                        act1: '#E68137',
+                        act2: '#D04C39',
+                        act3: '#9C5F4F',
+                        act4: '#142138',
+                        paper: '#FDFCF8'
+                    },
+                    fontFamily: {
+                        poppins: ['"Poppins"', 'sans-serif'],
+                        fira: ['"Fira Sans"', 'sans-serif'],
+                        zurich: ['"Zurich BT"', 'Inter', 'Roboto', 'sans-serif']
+                    },
+                    animation: {
+                        'float': 'float 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F4F4F4; }
+        section { scroll-margin-top: 100px; }
+        input, textarea, select { transition: all 0.3s ease; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #0071B8; box-shadow: 0 0 0 1px #0071B8; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Gradiente sutil sobre el fondo de imagen para asegurar legibilidad del texto */
+        .header-overlay {
+            background: linear-gradient(90deg, rgba(19,33,54,0.3) 0%, rgba(19,33,54,0.8) 100%);
+        }
+    </style>
+</head>
+<body class="text-gray-900 font-zurich pb-12">
+
+    <header class="text-white p-6 sm:p-10 relative shadow-lg z-40 flex items-center justify-end min-h-[160px] sm:min-h-[200px]" 
+            style="background-color: #132136; background-image: url('header-bg.png'); background-size: cover; background-position: center;">
+        
+        <div class="absolute inset-0 header-overlay pointer-events-none"></div>
+
+        <a href="https://scienti.minciencias.gov.co/gruplac/jsp/visualiza/visualizagr.jsp?nro=00000000021358" target="_blank" rel="noopener noreferrer" 
+           class="absolute left-6 sm:left-12 top-1/2 -translate-y-1/2 z-20 group transition-transform duration-300 hover:scale-105">
+            <img src="icon-192x192.png" alt="Yurupari Logo" class="w-20 h-20 sm:w-32 sm:h-32 object-contain drop-shadow-[0_15px_15px_rgba(0,0,0,0.5)] animate-float" onerror="this.style.display='none'">
+        </a>
+        
+        <div class="text-right w-full pl-32 sm:pl-48 relative z-10 font-poppins">
+            <h1 class="text-3xl sm:text-5xl md:text-6xl font-bold tracking-wider text-white leading-tight drop-shadow-md">
+                Yurupari
+            </h1>
+            <p class="text-lg sm:text-2xl md:text-3xl font-light text-blue-50 tracking-wide mt-2 drop-shadow-md">
+                Tejamos ideas, conectando lenguajes
+            </p>
+        </div>
+    </header>
+
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm border-b border-gray-200 py-3 px-4 transition-all">
+        <div class="max-w-5xl mx-auto flex overflow-x-auto no-scrollbar gap-4 sm:gap-8 justify-start sm:justify-center text-xs sm:text-sm font-fira uppercase font-bold tracking-wider">
+            <a href="#step-1" class="whitespace-nowrap text-gray-500 hover:text-okaBlue border-b-2 border-transparent hover:border-okaBlue pb-1 transition-colors">1. Sujeto</a>
+            <a href="#step-2" class="whitespace-nowrap text-gray-500 hover:text-okaBlue border-b-2 border-transparent hover:border-okaBlue pb-1 transition-colors">2. Objeto</a>
+            <a href="#step-3" class="whitespace-nowrap text-gray-500 hover:text-okaBlue border-b-2 border-transparent hover:border-okaBlue pb-1 transition-colors">3. Artefactos</a>
+            <a href="#step-4" class="whitespace-nowrap text-gray-500 hover:text-okaBlue border-b-2 border-transparent hover:border-okaBlue pb-1 transition-colors">4. Protocolo</a>
+            <a href="#step-5" class="whitespace-nowrap text-okaBlue hover:text-blue-800 border-b-2 border-okaBlue pb-1 transition-colors">↓ Exportar</a>
+        </div>
+    </nav>
+
+    <div class="max-w-5xl mx-auto p-4 sm:p-6 mt-4">
+        <main class="bg-paper shadow-xl border border-gray-200 rounded-b-md flex flex-col">
+            
+            <div class="p-6 sm:p-12 flex-grow">
+                <form id="workshopForm">
+                    
+                    <div class="mb-12 border-b border-gray-300 pb-8">
+                        <label class="block text-sm font-fira font-bold text-gray-800 mb-2 uppercase tracking-wider">Nombre de la Investigación / Taller *</label>
+                        <input type="text" id="nombre_taller" class="input-persist w-full border border-gray-300 bg-white rounded-sm p-4 text-xl font-zurich text-gray-900" placeholder="Ej. Laboratorio de co-creación territorial...">
+                    </div>
+
+                    <section id="step-1" class="mb-16">
+                        <h2 class="text-2xl font-fira font-bold mb-6 text-gray-900 border-l-4 border-okaBlue pl-3">1. Sujeto y Comunidad</h2>
+                        
+                        <div class="mb-8 bg-blue-50/50 p-5 border border-blue-100 shadow-sm rounded-sm">
+                            <h3 class="font-fira font-bold text-okaBlue mb-2 text-lg">Definición del Sujeto</h3>
+                            <p class="text-sm text-gray-700 font-zurich italic">El sujeto (individual o colectivo) se caracteriza a través de la evaluación de las 6 habilidades/valores a continuación.</p>
+                        </div>
+
+                        <div class="bg-white p-6 border border-gray-200 mb-8 shadow-sm rounded-sm">
+                            <h3 class="font-fira font-bold text-gray-800 mb-4 uppercase text-sm tracking-wider">Métricas de Habilidades y Valores (Perfil Ontológico)</h3>
+                            <p class="text-sm text-gray-600 mb-6 font-zurich">Evalúa del 0 al 5 los valores que definen el perfil de este sujeto y su comunidad:</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                                <div><label class="text-xs font-fira font-bold text-gray-800 uppercase">Osadía</label><input type="number" id="val_osadia" min="0" max="5" value="0" class="input-persist w-full border border-gray-300 bg-white p-2 mt-1 text-center font-bold text-okaBlue"></div>
+                                <div><label class="text-xs font-fira font-bold text-gray-800 uppercase">Determinación</label><input type="number" id="val_determinacion" min="0" max="5" value="0" class="input-persist w-full border border-gray-300 bg-white p-2 mt-1 text-center font-bold text-okaBlue"></div>
+                                <div><label class="text-xs font-fira font-bold text-gray-800 uppercase">Empatía</label><input type="number" id="val_empatia" min="0" max="5" value="0" class="input-persist w-full border border-gray-300 bg-white p-2 mt-1 text-center font-bold text-okaBlue"></div>
+                                <div><label class="text-xs font-fira font-bold text-gray-800 uppercase">Imaginación</label><input type="number" id="val_imaginacion" min="0" max="5" value="0" class="input-persist w-full border border-gray-300 bg-white p-2 mt-1 text-center font-bold text-okaBlue"></div>
+                                <div><label class="text-xs font-fira font-bold text-gray-800 uppercase">Curiosidad</label><input type="number" id="val_curiosidad" min="0" max="5" value="0" class="input-persist w-full border border-gray-300 bg-white p-2 mt-1 text-center font-bold text-okaBlue"></div>
+                                <div><label class="text-xs font-fira font-bold text-gray-800 uppercase">Colaboración</label><input type="number" id="val_colaboracion" min="0" max="5" value="0" class="input-persist w-full border border-gray-300 bg-white p-2 mt-1 text-center font-bold text-okaBlue"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div>
+                                <label class="block text-sm font-fira font-bold mb-2 text-gray-800">Clasificación de Comunidad *</label>
+                                <select id="clasificacion_com" class="input-persist w-full border border-gray-300 p-3 bg-white font-zurich">
+                                    <option value="Comunidad de práctica (Pensamiento conservador)">Comunidad de práctica (Pensamiento conservador)</option>
+                                    <option value="Comunidad de aprendizaje (Actitud curiosa)">Comunidad de aprendizaje (Actitud curiosa)</option>
+                                    <option value="Comunidad de innovación social (Pensamiento transformador)">Comunidad de innovación social (Pensamiento transformador)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-fira font-bold mb-2 text-gray-800">Descripción de la Comunidad *</label>
+                                <textarea id="comunidad" class="input-persist w-full border border-gray-300 p-3 font-zurich bg-white" rows="4" placeholder="Describe detalladamente el contexto sociocultural..."></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <hr class="border-gray-300 my-10">
+
+                    <section id="step-2" class="mb-16">
+                        <h2 class="text-2xl font-fira font-bold mb-6 text-gray-900 border-l-4 border-okaBlue pl-3">2. Objeto de co-creación</h2>
+                        
+                        <div class="mb-8">
+                            <label class="block text-sm font-fira font-bold mb-2 text-gray-800">Objeto de Diseño *</label>
+                            <textarea id="objeto" class="input-persist w-full border border-gray-300 p-3 bg-white font-zurich" rows="3" placeholder="Expresa el propósito creativo y fenomenológico del taller..."></textarea>
+                        </div>
+
+                        <div class="bg-white p-6 border border-gray-200 shadow-sm rounded-sm">
+                            <h3 class="font-fira font-bold text-gray-800 mb-4 uppercase text-sm tracking-wider border-b border-gray-200 pb-2">División del trabajo (Roles)</h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
+                                <div><label class="text-xs font-fira text-gray-600 uppercase font-bold">Facilitador</label><input type="number" id="rol_fac" value="0" min="0" class="input-persist calc-roles w-full border border-gray-300 p-2 mt-1 bg-white text-center"></div>
+                                <div><label class="text-xs font-fira text-gray-600 uppercase font-bold">Observador</label><input type="number" id="rol_obs" value="0" min="0" class="input-persist calc-roles w-full border border-gray-300 p-2 mt-1 bg-white text-center"></div>
+                                <div><label class="text-xs font-fira text-gray-600 uppercase font-bold">Participantes</label><input type="number" id="rol_par" value="0" min="0" class="input-persist calc-roles w-full border border-gray-300 p-2 mt-1 bg-white text-center"></div>
+                                <div><label class="text-xs font-fira text-gray-600 uppercase font-bold">Investigador</label><input type="number" id="rol_inv" value="0" min="0" class="input-persist calc-roles w-full border border-gray-300 p-2 mt-1 bg-white text-center"></div>
+                            </div>
+                            <div class="text-right border-t border-gray-200 pt-4">
+                                <span class="font-fira font-bold text-sm uppercase text-gray-500 mr-4">Total Participantes:</span>
+                                <span id="total_roles" class="text-2xl font-candara font-bold text-okaBlue">0</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <hr class="border-gray-300 my-10">
+
+                    <section id="step-3" class="mb-16">
+                        <h2 class="text-2xl font-fira font-bold mb-6 text-gray-900 border-l-4 border-okaBlue pl-3">3. Técnicas y Artefactos</h2>
+                        <p class="text-sm text-gray-600 mb-8 font-zurich italic">Diseña los materiales y técnicas metodológicas (físicas o digitales) a implementar en campo.</p>
+                        
+                        <div class="mb-8 bg-white p-6 border border-gray-200 shadow-sm rounded-sm">
+                            <label class="block text-sm font-fira font-bold mb-4 text-gray-800 uppercase tracking-wider">Técnicas de co-diseño (Selecciona múltiples) *</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-100 hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="tecnica" value="Sonda cultural" class="checkbox-persist form-checkbox h-5 w-5 text-okaBlue rounded-sm border-gray-300 focus:ring-okaBlue">
+                                    <span class="text-gray-900 font-zurich">Sonda cultural</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-100 hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="tecnica" value="Toolkit" class="checkbox-persist form-checkbox h-5 w-5 text-okaBlue rounded-sm border-gray-300 focus:ring-okaBlue">
+                                    <span class="text-gray-900 font-zurich">Toolkit</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-100 hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="tecnica" value="Prototipo generativo" class="checkbox-persist form-checkbox h-5 w-5 text-okaBlue rounded-sm border-gray-300 focus:ring-okaBlue">
+                                    <span class="text-gray-900 font-zurich">Prototipo generativo</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-100 hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="tecnica" value="Prototipo presuntivo" class="checkbox-persist form-checkbox h-5 w-5 text-okaBlue rounded-sm border-gray-300 focus:ring-okaBlue">
+                                    <span class="text-gray-900 font-zurich">Prototipo presuntivo</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-fira font-bold mb-2 text-gray-800">Idea general de las técnicas y artefactos</label>
+                            <textarea id="idea_tecnica" class="input-persist w-full border border-gray-300 p-4 bg-white font-zurich" rows="4" placeholder="Fundamentación teórica y aplicación práctica de los artefactos..."></textarea>
+                        </div>
+                    </section>
+
+                    <hr class="border-gray-300 my-10">
+
+                    <section id="step-4" class="mb-16">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 border-b border-gray-300 pb-4">
+                            <div>
+                                <h2 class="text-2xl font-fira font-bold text-gray-900 border-l-4 border-okaBlue pl-3 mb-2">4. Reglas (Protocolo Lúdico)</h2>
+                                <p class="text-sm text-gray-600 font-zurich italic">Mapeo de acciones para alcanzar el estado de Flujo (Máximo 6 por actividad).</p>
+                            </div>
+                            <div class="mt-4 sm:mt-0 bg-white border border-okaBlue px-4 py-2 shadow-sm text-right rounded">
+                                <span class="font-fira text-xs uppercase text-gray-600 font-bold">Tiempo Total:</span>
+                                <span id="total_tiempo" class="font-candara font-bold text-2xl text-okaBlue ml-2">0</span> <span class="text-gray-800 font-zurich text-sm">min</span>
+                            </div>
+                        </div>
+
+                        <div id="actividades-container" class="space-y-12">
+                            </div>
+                    </section>
+
+                    <section id="step-5" class="text-center py-16">
+                        <div class="mb-6">
+                            <svg class="w-16 h-16 mx-auto text-okaBlue opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+                        </div>
+                        <h2 class="text-3xl font-poppins font-bold mb-3 text-gray-900 tracking-wide">Protocolo Generado</h2>
+                        <p class="text-gray-600 mb-8 max-w-xl mx-auto font-zurich leading-relaxed text-sm">El documento consolidará los datos del sujeto, la gráfica del perfil ontológico (Radar), y la tabla metodológica de las actividades de flujo.</p>
+                        
+                        <button type="button" id="btnExport" class="bg-okaBlue hover:bg-blue-800 text-white font-fira font-bold tracking-wider py-4 px-10 rounded shadow-md transition-all duration-300 uppercase text-sm">
+                            Descargar Protocolo (PDF)
+                        </button>
+                        <p id="export-msg" class="text-sm text-act1 mt-4 hidden font-zurich italic font-bold">Dibujando matrices y generando documento...</p>
+                    </section>
+                </form>
+            </div>
+
+            <section id="cta" class="bg-gradient-to-br from-[#132136] to-[#1a2d4a] border-t border-gray-200 p-8 sm:p-14 text-center rounded-b-md shadow-inner relative overflow-hidden">
+                <div class="max-w-2xl mx-auto relative z-10">
+                    <h3 class="text-2xl sm:text-3xl font-poppins font-bold text-white mb-4 tracking-wide">Asesoría Especializada</h3>
+                    <p class="text-blue-100 font-zurich mb-10 leading-relaxed text-sm sm:text-base font-light">
+                        ¿Necesitas llevar tu taller al siguiente nivel? Si requieres apoyo profesional para diseñar, facilitar o sistematizar metodologías de co-creación adaptadas a tu comunidad o equipo de trabajo, nosotros te apoyamos.
+                    </p>
+                    <button type="button" onclick="generarCotizacion()" class="inline-flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-okaDeepDark font-fira font-bold py-4 px-10 rounded shadow-xl transition-transform transform hover:-translate-y-1 duration-300 uppercase text-sm tracking-wider w-full sm:w-auto">
+                        <svg class="w-5 h-5 text-okaBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        Solicitar Asesoría
+                    </button>
+                </div>
+            </section>
+            
+        </main>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN E IDENTIDAD VISUAL ---
+        const actividadesConfig = [
+            { id: 1, title: "Actividad 1: 'Ahora'", subtitle: "(Aburrimiento / Relajación)", colorHex: "#E68137", colorRGB: [230, 129, 55] },
+            { id: 2, title: "Actividad 2: 'Pasado'", subtitle: "(Control / Excitación)", colorHex: "#D04C39", colorRGB: [208, 76, 57] },
+            { id: 3, title: "Actividad 3: 'Pasado Profundo'", subtitle: "(Excitación Alta)", colorHex: "#9C5F4F", colorRGB: [156, 95, 79] },
+            { id: 4, title: "Actividad 4: 'Futuro Soñado'", subtitle: "(Flujo / Disfrute)", colorHex: "#142138", colorRGB: [20, 33, 56] }
+        ];
+
+        const actionCounts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+        // --- RENDERIZADO DINÁMICO ---
+        function renderActivities() {
+            const container = document.getElementById('actividades-container');
+            let html = '';
+            
+            actividadesConfig.forEach(act => {
+                html += `
+                <div class="border border-gray-300 bg-white shadow-sm rounded-sm overflow-hidden">
+                    <div class="p-4 flex flex-col md:flex-row justify-between md:items-center gap-4" style="background-color: ${act.colorHex};">
+                        <h3 class="font-fira font-bold text-lg text-white">${act.title} <span class="font-normal text-sm text-white/80 font-zurich ml-2">${act.subtitle}</span></h3>
+                        <div class="flex items-center gap-3 bg-white/10 p-2 rounded-sm">
+                            <label class="text-xs font-fira font-bold text-white uppercase tracking-wider">Tipo *</label>
+                            <select id="tipo_act_${act.id}" class="input-persist border-none p-1.5 text-sm bg-white text-gray-900 font-zurich font-bold outline-none rounded-sm">
+                                <option value="Telling (Narrar)">Telling (Narrar)</option>
+                                <option value="Making (Fabricar)">Making (Fabricar)</option>
+                                <option value="Enacting (Representar)">Enacting (Representar)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="p-4 sm:p-6 bg-gray-50/50">
+                        <div id="actions-container-${act.id}" class="space-y-6"></div>
+                        <div class="mt-6 text-center sm:text-left border-t border-gray-200 pt-4">
+                            <button type="button" onclick="addAction(${act.id})" class="text-sm font-fira uppercase font-bold px-4 py-2 border-2 rounded transition-colors inline-flex items-center gap-2" style="color: ${act.colorHex}; border-color: ${act.colorHex};" onmouseover="this.style.backgroundColor='${act.colorHex}15'" onmouseout="this.style.backgroundColor='transparent'">
+                                <span>+</span> Añadir Acción (Máx 6)
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+            
+            // Inicializar con 1 acción o cargar desde localStorage
+            actividadesConfig.forEach(act => {
+                const savedData = JSON.parse(localStorage.getItem('yurupari_data')) || {};
+                const savedActionsCount = savedData[`act_${act.id}_count`] || 1;
+                for(let i=0; i < savedActionsCount; i++) {
+                    addAction(act.id, true);
+                }
+            });
+        }
+
+        function addAction(actId, isLoading = false) {
+            if (actionCounts[actId] >= 6 && !isLoading) return alert("Límite de 6 acciones por actividad alcanzado.");
+            actionCounts[actId]++;
+            const actionId = actionCounts[actId];
+            const container = document.getElementById(`actions-container-${actId}`);
+            
+            const actionDiv = document.createElement('div');
+            actionDiv.className = "bg-white p-5 border border-gray-200 shadow-sm relative rounded-sm";
+            actionDiv.id = `act_${actId}_action_${actionId}`;
+            
+            actionDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+                    <h4 class="text-sm font-fira font-bold text-gray-600 uppercase tracking-wider">Acción ${actId}.${actionId}</h4>
+                    ${actionId > 1 ? `<button type="button" onclick="removeAction(${actId}, ${actionId})" class="text-red-500 hover:text-red-700 text-xs font-fira font-bold uppercase tracking-wide">X Quitar</button>` : ''}
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+                    <div class="md:col-span-5">
+                        <label class="block text-xs font-fira font-bold text-gray-800 mb-1 uppercase">Descripción de la Acción *</label>
+                        <textarea id="accion_text_${actId}_${actionId}" class="input-persist w-full border border-gray-300 rounded-sm p-2 text-sm font-zurich bg-white" rows="2" placeholder="Detalle metodológico..."></textarea>
+                    </div>
+                    <div class="md:col-span-3">
+                        <label class="block text-xs font-fira font-bold text-gray-800 mb-1 uppercase">Recursos Físicos/Digitales</label>
+                        <textarea id="recursos_${actId}_${actionId}" class="input-persist w-full border border-gray-300 rounded-sm p-2 text-sm font-zurich bg-white" rows="2" placeholder="Materiales..."></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-fira font-bold text-gray-800 mb-1 uppercase">Estímulo *</label>
+                        <select id="estimulo_${actId}_${actionId}" class="input-persist w-full border border-gray-300 rounded-sm p-2 text-sm font-zurich bg-white mt-1">
+                            <option value="Emocional">Emocional</option>
+                            <option value="Sensorial">Sensorial</option>
+                            <option value="Conceptual">Conceptual</option>
+                            <option value="Sociocultural">Sociocult.</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-fira font-bold text-gray-800 mb-1 uppercase">Tiempo (Min) *</label>
+                        <input type="number" id="tiempo_${actId}_${actionId}" min="0" value="0" class="input-persist calc-tiempo w-full border border-gray-300 rounded-sm p-2 text-sm font-zurich bg-white mt-1 text-center text-okaBlue font-bold">
+                    </div>
+                </div>
+            `;
+            container.appendChild(actionDiv);
+            
+            const timeInput = actionDiv.querySelector('.calc-tiempo');
+            timeInput.addEventListener('input', calculateTime);
+            
+            actionDiv.querySelectorAll('.input-persist').forEach(input => {
+                input.addEventListener('input', saveToLocal);
+            });
+            
+            if(!isLoading) saveToLocal();
+        }
+
+        function removeAction(actId, actionId) {
+            const el = document.getElementById(`act_${actId}_action_${actionId}`);
+            if (el) { el.remove(); actionCounts[actId]--; calculateTime(); saveToLocal(); }
+            
+            const remaining = document.getElementById(`actions-container-${actId}`).children;
+            for(let i=0; i<remaining.length; i++) {
+                const header = remaining[i].querySelector('h4');
+                header.textContent = `Acción ${actId}.${i+1}`;
+            }
+        }
+
+        // --- LÓGICA DE COTIZACIÓN (MAILTO) ---
+        function generarCotizacion() {
+            const nombreTaller = document.getElementById('nombre_taller').value.trim() || "[Nombre de tu taller no especificado]";
+            const emailDestino = "okaconsultores@gmail.com";
+            const asunto = encodeURIComponent("Solicitud de Asesoría - Proyecto Yurupari");
+            const cuerpo = encodeURIComponent(`Hola equipo de Oka Consultores,\n\nMe interesa recibir asesoría especializada para mi taller titulado: "${nombreTaller}".\n\nPor favor, contáctenme para conversar sobre los detalles y opciones de acompañamiento metodológico.\n\nQuedo atento/a,\n[Tu Nombre]`);
+            
+            window.location.href = `mailto:${emailDestino}?subject=${asunto}&body=${cuerpo}`;
+        }
+
+        // --- CÁLCULOS Y PERSISTENCIA UI ---
+        function calculateRoles() {
+            const sum = ['fac','obs','par','inv'].reduce((a, b) => a + (parseInt(document.getElementById(`rol_${b}`).value) || 0), 0);
+            document.getElementById('total_roles').textContent = sum;
+        }
+
+        function calculateTime() {
+            let total = 0;
+            document.querySelectorAll('.calc-tiempo').forEach(input => total += parseInt(input.value) || 0);
+            document.getElementById('total_tiempo').textContent = total;
+        }
+
+        function saveToLocal() {
+            const data = {};
+            document.querySelectorAll('.input-persist').forEach(input => {
+                data[input.id] = input.value;
+            });
+            
+            const tecnicas = [];
+            document.querySelectorAll('.checkbox-persist:checked').forEach(cb => tecnicas.push(cb.value));
+            data['tecnicas_seleccionadas'] = tecnicas;
+
+            actividadesConfig.forEach(act => {
+                data[`act_${act.id}_count`] = actionCounts[act.id];
+            });
+
+            localStorage.setItem('yurupari_data', JSON.stringify(data));
+        }
+
+        function loadFromLocal() {
+            const savedData = localStorage.getItem('yurupari_data');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                document.querySelectorAll('.input-persist').forEach(input => {
+                    if(data[input.id] !== undefined) {
+                        input.value = data[input.id];
+                    }
+                });
+
+                if(data['tecnicas_seleccionadas']) {
+                    document.querySelectorAll('.checkbox-persist').forEach(cb => {
+                        cb.checked = data['tecnicas_seleccionadas'].includes(cb.value);
+                    });
+                }
+                
+                calculateRoles();
+                calculateTime();
+            }
+        }
+
+        document.addEventListener('input', (e) => {
+            if(e.target.classList.contains('input-persist') || e.target.classList.contains('checkbox-persist')) {
+                saveToLocal();
+            }
+        });
+        document.querySelectorAll('.calc-roles').forEach(input => input.addEventListener('input', calculateRoles));
+
+        // --- EXPORTACIÓN Y GRÁFICA DE RADAR (PDF) ---
+        function loadImageData(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width; canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL('image/png'));
+                };
+                img.onerror = () => resolve(null);
+                img.src = url;
+            });
+        }
+
+        document.getElementById('btnExport').addEventListener('click', async () => {
+            document.getElementById('export-msg').classList.remove('hidden');
+            document.getElementById('btnExport').disabled = true;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const cDark = [19, 33, 54];   // #132136
+            const cOka = [0, 113, 184];   // #0071B8
+            const margin = 20;
+            let y = 20;
+
+            const logoData = await loadImageData('icon-512x512.png');
+            if (logoData) {
+                doc.addImage(logoData, 'PNG', margin, 12, 18, 18);
+                y = 38;
+            } else { y = 25; }
+
+            doc.setDrawColor(...cOka);
+            doc.setLineWidth(0.6);
+            doc.line(margin, y - 5, 190, y - 5);
+
+            const checkPageBreak = (needed = 20) => { if (y + needed > 275) { doc.addPage(); y = 20; return true; } return false; };
+
+            const printTitle = (text, size = 16) => {
+                checkPageBreak(15);
+                doc.setFont("helvetica", "bold"); doc.setFontSize(size); doc.setTextColor(...cDark);
+                if(Array.isArray(text)){
+                    doc.text(text, margin, y);
+                    y += (text.length * (size * 0.35)) + 4;
+                } else {
+                    doc.text(text, margin, y); y += 6;
+                }
+            };
+
+            const printKeyValueTable = (data) => {
+                doc.autoTable({
+                    startY: y,
+                    body: data,
+                    theme: 'grid',
+                    styles: { font: 'times', fontSize: 10, lineColor: [220, 220, 220], lineWidth: 0.1 },
+                    columnStyles: {
+                        0: { cellWidth: 50, fontStyle: 'bold', fillColor: [245, 247, 250], textColor: cDark, halign: 'left' },
+                        1: { cellWidth: 120, textColor: [60, 60, 60] }
+                    },
+                    margin: { left: margin, right: margin },
+                    pageBreak: 'auto'
+                });
+                y = doc.lastAutoTable.finalY + 10;
+            };
+
+            const tituloText = document.getElementById('nombre_taller').value || "Investigación sin título";
+            const titleLines = doc.splitTextToSize(tituloText.toUpperCase(), 170);
+            printTitle(titleLines, 16);
+            
+            printTitle("1. Sujeto y Comunidad", 14);
+            printKeyValueTable([
+                ['Clasificación', document.getElementById('clasificacion_com').value],
+                ['Descripción', document.getElementById('comunidad').value || "Sin descripción proporcionada."]
+            ]);
+
+            // --- GRÁFICA RADAR ---
+            checkPageBreak(85);
+            doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(...cOka);
+            doc.text("Perfil Ontológico de la Comunidad (Radar de Valores)", margin, y);
+            y += 35; 
+
+            const values = [
+                parseInt(document.getElementById('val_osadia').value) || 0,
+                parseInt(document.getElementById('val_determinacion').value) || 0,
+                parseInt(document.getElementById('val_empatia').value) || 0,
+                parseInt(document.getElementById('val_imaginacion').value) || 0,
+                parseInt(document.getElementById('val_curiosidad').value) || 0,
+                parseInt(document.getElementById('val_colaboracion').value) || 0
+            ];
+            const labels = ['Osadía', 'Determinación', 'Empatía', 'Imaginación', 'Curiosidad', 'Colaboración'];
+            
+            const cx = 105; const cy = y; const radius = 25; const levels = 5;
+
+            doc.setDrawColor(220, 220, 220); doc.setLineWidth(0.2);
+            for(let j=1; j<=levels; j++) {
+                let r = (j/levels) * radius; let pts = [];
+                for(let i=0; i<6; i++) {
+                    let a = -Math.PI/2 + (i * 2 * Math.PI / 6);
+                    pts.push({x: cx + r * Math.cos(a), y: cy + r * Math.sin(a)});
+                }
+                for(let i=0; i<6; i++) doc.line(pts[i].x, pts[i].y, pts[(i+1)%6].x, pts[(i+1)%6].y);
+            }
+
+            doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 100, 100);
+            for(let i=0; i<6; i++) {
+                let a = -Math.PI/2 + (i * 2 * Math.PI / 6);
+                doc.line(cx, cy, cx + radius * Math.cos(a), cy + radius * Math.sin(a));
+                let lx = cx + (radius + 6) * Math.cos(a); let ly = cy + (radius + 6) * Math.sin(a);
+                let alignOffset = lx < cx - 5 ? -doc.getTextWidth(labels[i]) : (lx > cx + 5 ? 0 : -doc.getTextWidth(labels[i])/2);
+                doc.text(labels[i], lx + alignOffset, ly + 1);
+            }
+
+            let dataPts = [];
+            for(let i=0; i<6; i++) {
+                let a = -Math.PI/2 + (i * 2 * Math.PI / 6);
+                let r = (values[i] / levels) * radius;
+                dataPts.push({x: cx + r * Math.cos(a), y: cy + r * Math.sin(a)});
+            }
+            
+            doc.setDrawColor(...cOka); doc.setLineWidth(0.8); doc.setFillColor(...cOka);
+            for(let i=0; i<6; i++) {
+                doc.line(dataPts[i].x, dataPts[i].y, dataPts[(i+1)%6].x, dataPts[(i+1)%6].y);
+                doc.circle(dataPts[i].x, dataPts[i].y, 1.2, 'F');
+            }
+            y += radius + 20;
+
+            printTitle("2. Objeto de co-creación", 14);
+            printKeyValueTable([
+                ['Objeto Fenomenológico', document.getElementById('objeto').value || "Sin definir."],
+                ['Total Participantes', document.getElementById('total_roles').textContent]
+            ]);
+
+            printTitle("3. Técnicas y Artefactos", 14);
+            const checkboxes = document.querySelectorAll('input[name="tecnica"]:checked');
+            const seleccionadas = Array.from(checkboxes).map(cb => cb.value).join(", ") || "Ninguna seleccionada";
+            printKeyValueTable([
+                ['Técnicas', seleccionadas],
+                ['Fundamentación', document.getElementById('idea_tecnica').value || "Sin fundamentación."]
+            ]);
+
+            // --- SECCIÓN 4: TABLAS DE ACTIVIDADES ---
+            doc.addPage(); y = 20;
+            printTitle("4. Protocolo Lúdico (Dinámicas de Flujo)", 16);
+            printKeyValueTable([
+                ['Tiempo Total Estimado', `${document.getElementById('total_tiempo').textContent} minutos`]
+            ]);
+
+            actividadesConfig.forEach(act => {
+                const tipo = document.getElementById(`tipo_act_${act.id}`).value;
+                let tableData = [];
+                
+                let realIndex = 1;
+                for(let i = 1; i <= actionCounts[act.id]; i++) {
+                    const node = document.getElementById(`act_${act.id}_action_${i}`);
+                    if(!node) continue;
+
+                    const accion = document.getElementById(`accion_text_${act.id}_${i}`).value || "-";
+                    const recursos = document.getElementById(`recursos_${act.id}_${i}`).value || "-";
+                    const estimulo = document.getElementById(`estimulo_${act.id}_${i}`).value;
+                    const tiempo = document.getElementById(`tiempo_${act.id}_${i}`).value || "0";
+
+                    const col1 = `[Acción ${act.id}.${realIndex}] ${accion}\n\n• Estímulo: ${estimulo} | • Tiempo: ${tiempo} min`;
+                    tableData.push([col1, recursos]);
+                    realIndex++;
+                }
+
+                if (tableData.length > 0) {
+                    doc.autoTable({
+                        startY: y,
+                        head: [[`${act.title} - ${tipo}`, 'Recursos / Materiales']],
+                        body: tableData,
+                        theme: 'grid',
+                        headStyles: { fillColor: act.colorRGB, textColor: [255, 255, 255], font: 'helvetica', fontStyle: 'bold', fontSize: 11 },
+                        bodyStyles: { font: 'times', fontSize: 10, textColor: [40, 40, 40] },
+                        columnStyles: { 0: { cellWidth: 105 }, 1: { cellWidth: 65 } },
+                        margin: { left: margin, right: margin },
+                        pageBreak: 'auto'
+                    });
+                    y = doc.lastAutoTable.finalY + 10;
+                }
+            });
+
+            doc.save(`Protocolo_Yurupari_${tituloText.substring(0,15).replace(/\s/g, '_')}.pdf`);
+            
+            document.getElementById('export-msg').classList.add('hidden');
+            document.getElementById('btnExport').disabled = false;
+        });
+
+        // Inicializar
+        window.addEventListener('DOMContentLoaded', () => { 
+            renderActivities(); 
+            setTimeout(loadFromLocal, 100); 
+        });
+    </script>
+</body>
+</html>
